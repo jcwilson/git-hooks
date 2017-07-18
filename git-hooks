@@ -28,9 +28,9 @@ set +e
 getopt -T &>/dev/null
 set -e
 if [[ $? -eq 4 ]]; then
-    getopt=getopt
+    export getopt=getopt
 else
-    getopt="$(brew --prefix gnu-getopt &>/dev/null || command -v port &>/dev/null && echo /opt/local || echo /usr/local)/bin/getopt"
+    export getopt="$(brew --prefix gnu-getopt &>/dev/null || command -v port &>/dev/null && echo /opt/local || echo /usr/local)/bin/getopt"
 fi
 
 if !command -v $getopt &>/dev/null ; then
