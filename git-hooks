@@ -33,7 +33,9 @@ elif brew --prefix gnu-getopt &>/dev/null; then
     getopt=$(brew --prefix gnu-getopt)/bin/getopt
 elif command -v port &>/dev/null; then
     getopt=/opt/local/bin/getopt
-else
+fi
+
+if !command -v $getopt &>/dev/null ; then
     echo "Could not find GNU getopt. Exiting." >&2
     exit 1
 fi
