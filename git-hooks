@@ -24,21 +24,32 @@ GITHOOKS=(
     post-rewrite
 )
 
+
+# GETOPT
+#############################################
+# We depend on GNU getopt for option parsing, but we don't expect
+# OSX users to install it over their built-in getopt command.
+
 set +e
 getopt -T &>/dev/null
-set -e
 if [[ $? -eq 4 ]]; then
     getopt=getopt
 elif brew --prefix gnu-getopt &>/dev/null; then
     getopt=$(brew --prefix gnu-getopt)/bin/getopt
 elif command -v port &>/dev/null; then
     getopt=/opt/local/bin/getopt
-fi
-echo $getopt
-if !command -v $getopt &>/dev/null; then
+else
     echo "Could not find GNU getopt. Exiting." >&2
     exit 1
 fi
+
+# Final check because 'brew --prefix' can return a path that points to nothing.
+if ! command -v $getopt &>/dev/null; then
+    echo "Could not find GNU getopt. Exiting." >&2
+    exit 1
+fi
+set -e
+
 
 # HELP
 #############################################
@@ -748,7 +759,7 @@ HELP
 
     local name quiet=false
 
-    eval set -- "$($getopt -o q --long quiet -- "$@")"
+    eval set -- "$($getopt -o q --long quiet -- $@)"
     while [[ $1 != -- ]]; do
         case $1 in
             -q|--quiet) quiet=true; shift;;
@@ -782,7 +793,7 @@ HELP
 
     local name quiet=false
 
-    eval set -- "$($getopt -o q --long quiet -- "$@")"
+    eval set -- "$($getopt -o q --long quiet -- $@)"
     while [[ $1 != -- ]]; do
         case $1 in
             -q|--quiet) quiet=true; shift;;
@@ -815,7 +826,7 @@ HELP
 
     local hook name path
 
-    eval set -- "$($getopt -o f --long force -- "$@")"
+    eval set -- "$($getopt -o f --long force -- $@)"
     while [[ $1 != -- ]]; do
         case $1 in
             -f|--force) export GITHOOKS_RUN=true; shift;;
